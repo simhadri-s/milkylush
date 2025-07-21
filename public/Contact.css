@@ -1,0 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* CSS for Milkylush */
+:root
+{
+	--c1:#f4f7f0;
+  --c2:#bfd2d0;
+  --c3:#368980;
+  --c4:#62ccc0;
+  --c5:#261FB3;
+  --c6:#38b6ff;
+}
+* {
+  font-family: 'Poppins','Segoe UI', 'Helvetica Neue', 'Arial',sans-serif;
+}
+
+body {
+    font-family:'Poppins','Arial','Segoe UI', sans-serif;
+  }
+
+/*navbar*/
+.custom-navbar{
+  background-color:white;
+}
+.navbar-nav .nav-link {
+  font-size: 1.1rem; 
+  color:#123458!important;
+  font-weight:400;
+}
+
+.navbar img{
+width:180px;
+height:100px;
+border: none;
+border-radius: 20px;
+}
+
+.btn-primary {
+  border-radius: 10px;
+}
+/*navbar hover effect*/
+.navbar-nav .nav-link {
+  position: relative;
+  text-decoration: none;
+}
+
+.navbar-nav .nav-link:hover {
+  text-decoration: underline;
+}
+
+/*Contact Section*/
+.contact-section {
+  background-color: #fffef6;
+}
+
+#contactForm input,
+#contactForm textarea {
+  border-radius: 0.5rem;
+  box-shadow: none;
+}
+
+#contactForm button {
+  border-radius: 0.5rem;
+  padding: 10px 20px;
+}
+
+
+/*footer section*/
+  footer {
+   
+  }
+  footer a img {
+    transition: transform 0.3s ease;
+  }
+
+  footer a:hover img {
+    transform: scale(1.2);
+  }
+  .footer-bg {
+  background-image: url('img/footer.jpg'); 
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  color: white;
+}
+
+/* Overlay for readability */
+.footer-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(97, 88, 88, 0.6); /* Black transparent overlay */
+  z-index: 1;
+}
+
+.footer-bg .container,
+.footer-bg .text-center,
+.footer-bg .row,
+.footer-bg .col-md-4,
+.footer-bg a,
+.footer-bg p,
+.footer-bg h3,
+.footer-bg h5,
+.footer-bg small {
+  position: relative;
+  z-index: 2;
+  color:whitesmoke !important;
+  font-weight: bold;
+}
+
+.footer-bg a:hover {
+  text-decoration: underline;
+}
+ .footernav:hover{
+  color: #38b6ff !important;
+ }

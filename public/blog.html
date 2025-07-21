@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Milkylush Blog</title>
+   <link rel="icon"  href="img/icon.jpg">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="Blog.css" />
+</head>
+<body>
+
+<!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light custom-navbar">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="index.html"><img src="img/logo1.jpg"></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+        data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+        aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="Aboutus.html">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="shop.html">Shop</a></li>
+          <li class="nav-item"><a class="nav-link" href="blog.html">Blog</a></li>
+          <li class="nav-item"><a class="nav-link" href="contact.html" style="margin-right: 12px;">Contact</a></li>
+          <div class="d-none d-lg-block">
+          <a href="https://wa.me/919902882332" class="btn btn-warning text-white">Order Sample</a>
+    </div>
+        </ul>
+      </div>
+    </div>
+  </nav>
+<!--Hero Section-->
+ <section class="about-hero">
+  <video autoplay muted loop playsinline class="about-video-bg">
+    <source src="img/HeroSection.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+  <div class="about-hero-content text-center text-white">
+    <h1 class="display-4 fw-bold">Blog Posts </h1>
+  </div>
+</section>
+
+<!-- Blog Posts Section -->
+<div class="container py-5">
+  <div class="row g-4">
+
+    <!-- Blog Post 1 -->
+    <div class="col-md-4">
+      <div class="card blog-card h-100">
+        <img src="img/Blog1.jpg" class="card-img-top" alt="Blog Image 1">
+        <div class="card-body">
+          <h5 class="card-title">Why Farm-Fresh Milk Is Better Than Store Milk</h5>
+          <p class="card-text">Farm-fresh milk retains more nutrients, tastes better, and is free from preservatives.</p>
+          <div id="more1" style="display: none;">
+            <p>Store milk is often ultra-pasteurized and may lose key nutrients. Farm-fresh milk from Milky Lush is delivered within hours of milking, ensuring maximum freshness, flavor, and nutrition with zero additives or chemicals.</p>
+          </div>
+          <button class="btn btn-outline-primary btn-sm" onclick="toggleReadMore('more1', this)">Read More</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Blog Post 2 -->
+    <div class="col-md-4">
+      <div class="card blog-card h-100">
+        <img src="img/Blog2.jpg" class="card-img-top" alt="Blog Image 2">
+        <div class="card-body">
+          <h5 class="card-title">Our Plastic-Free Promise</h5>
+          <p class="card-text">Learn how Milkylush is reducing plastic waste by delivering milk in reusable, eco-friendly containers.</p>
+          <div id="more2" style="display: none;">
+            <p>We use returnable glass bottles and eco-conscious logistics to minimize plastic pollution. Our goal is to deliver pure milk while protecting the planet — one bottle at a time.</p>
+          </div>
+          <button class="btn btn-outline-primary btn-sm" onclick="toggleReadMore('more2', this)">Read More</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Blog Post 3 -->
+    <div class="col-md-4">
+      <div class="card blog-card h-100">
+        <img src="img/Blog3.jpg" class="card-img-top" alt="Blog Image 3">
+        <div class="card-body">
+          <h5 class="card-title">Meet Our Farmers</h5>
+          <p class="card-text">A closer look at the people behind the scenes who help bring you the purest milk, straight from the farm.</p>
+          <div id="more3" style="display: none;">
+            <p>Our dedicated farmers follow ethical practices, sustainable feeding, and hygienic milking processes. Every bottle you receive carries the care and pride of these local heroes.</p>
+          </div>
+          <button class="btn btn-outline-primary btn-sm" onclick="toggleReadMore('more3', this)">Read More</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Blog Post 4 -->
+    <div class="col-md-4">
+      <div class="card blog-card h-100">
+        <img src="img/Blog4.jpg" class="card-img-top" alt="Blog Image 4">
+        <div class="card-body">
+          <h5 class="card-title">How We Ensure Quality</h5>
+          <p class="card-text">Get a behind-the-scenes look at our quality checks and hygiene protocols that make Milkylush reliable.</p>
+          <div id="more4" style="display: none;">
+            <p>Each batch is tested for purity, contaminants, and nutrient levels. From sterilized equipment to cold-chain delivery, we never compromise on quality or safety.</p>
+          </div>
+          <button class="btn btn-outline-primary btn-sm" onclick="toggleReadMore('more4', this)">Read More</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Blog Post 5 -->
+    <div class="col-md-4">
+      <div class="card blog-card h-100">
+        <img src="img/Blog5.jpg" class="card-img-top" alt="Blog Image 5">
+        <div class="card-body">
+          <h5 class="card-title">Milk Myths Busted</h5>
+          <p class="card-text">From pasteurization to fat content, we clear up common misconceptions about milk consumption.</p>
+          <div id="more5" style="display: none;">
+            <p>Many believe milk causes weight gain or digestive issues. We debunk these myths with facts, studies, and tips on choosing the right type of milk for your lifestyle.</p>
+          </div>
+          <button class="btn btn-outline-primary btn-sm" onclick="toggleReadMore('more5', this)">Read More</button>
+        </div>
+      </div>
+    </div>
+ 
+     <!-- Blog Post 6 -->
+    <div class="col-md-4">
+  <div class="card blog-card h-100">
+    <img src="img/Blog6.jpg" class="card-img-top" alt="Blog Image 4">
+    <div class="card-body">
+      <h5 class="card-title">Why You Can Trust Milkylush</h5>
+      <p class="card-text">Transparency is at the heart of everything we do—from sourcing to delivery.</p>
+      <div id="more6" style="display: none;">
+        <p>
+          Every bottle of milk comes from verified local farms where cows are well-fed and cared for naturally. We track each delivery in real-time and give customers access to detailed sourcing and quality info. With no hidden ingredients and zero middlemen, you get only pure, farm-fresh milk, every single time.
+        </p>
+      </div>
+      <button class="btn btn-outline-primary btn-sm" onclick="toggleReadMore('more6', this)">Read More</button>
+    </div>
+  </div>
+</div>
+
+
+  </div>
+</div>
+
+<!-- Footer Section -->
+<footer class="footer-bg text-white pt-5 pb-3">
+    <div class="container">
+      <div class="row text-center text-md-start">
+        <!-- Branding -->
+        <div class="col-md-4 mb-4">
+          <h3 class="fw-bold">Milkylush</h3>
+          <p>Hyperlocal plastic-free raw and fresh milk delivery</p>
+          <div class="d-flex justify-content-center justify-content-md-start gap-3 mt-3">
+            <a href="https://www.facebook.com/share/1G6nBxd3vt/?mibextid=wwXIfr" target="_blank">
+              <img src="https://img.icons8.com/ios-filled/30/000000/facebook-new.png" alt="Facebook">
+            </a>
+            <a href="https://www.instagram.com/milkylush_organic?igsh=a3phYjI3NjA0ZWU1&utm_source=qr" target="_blank">
+              <img src="https://img.icons8.com/ios-filled/30/000000/instagram-new.png" alt="Instagram">
+            </a>
+            <a href="https://youtube.com/@milkylush?si=mqMZMxBex8v8QCP-" target="_blank">
+              <img src="https://img.icons8.com/ios-filled/30/000000/youtube-play.png" alt="YouTube">
+            </a>
+            <a href="mailto:milkylushorganic@gmail.com?subject=Milk%20Delivery%20Inquiry">
+              <img src="https://img.icons8.com/ios-filled/30/000000/new-post.png" alt="Email">
+            </a>
+          </div>
+          
+        </div>
+  
+        <!-- Contact Info -->
+        <div class="col-md-4 mb-4">
+          <h5 class="fw-semibold">Find Us</h5>
+          <p>MilkyLush, Off Hosur Road<br>
+            Near Electronic City, Bangalore - 560100</p>
+          <p><strong>Call Us</strong><br>+91-9902882332</p>
+          <p><strong>Email Us</strong><br>milkylushorganic@gmail.com</p>
+        </div>
+  
+        <!-- Useful Links -->
+        <div class="col-md-4 mb-4">
+          <h5 class="fw-semibold">Useful Links</h5>
+          <ul class="list-unstyled">
+            <li><a href="index.html" class="text-dark">Home</a></li>
+            <li><a href="Aboutus.html" class="text-dark">About</a></li>
+            <li><a href="shop.html" class="text-dark">Free Sample</a></li>
+            <li><a href="contact.html" class="text-dark">FAQs</a></li>
+            <li><a href="https://wa.me/919902882332" class="text-dark">Chat on WhatsApp <i class="fab fa-whatsapp"></i></a></li>
+          </ul>
+        </div>
+      </div>
+  
+      <!-- Bottom Bar -->
+      <div class="text-center mt-2 border-top pt-2">
+        <footer class=" text-center text-muted py-3 mt-5">
+  <small> 2025 MilkyLush. Developed by <strong>Project OG</strong>.</small>
+</footer>
+      </div>
+    </div>
+  </footer>
+  
+  <!-- Font Awesome -->
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  
+  <!-- Toggle Script -->
+<script>
+  function toggleReadMore(id, btn) {
+    const content = document.getElementById(id);
+    if (content.style.display === "none") {
+      content.style.display = "block";
+      btn.innerText = "Read Less";
+    } else {
+      content.style.display = "none";
+      btn.innerText = "Read More";
+    }
+  }
+</script>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

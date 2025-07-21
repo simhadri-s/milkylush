@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Booking | Milk Delivery Service</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light custom-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="../index.html">
+                <img src="../img/logo1.jpg" alt="Logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="../index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../Aboutus.html">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="../shop.html">Shop</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../blog.html">Blog</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../contact.html">Contact</a>
+                    </li>
+                    <li class="nav-item d-none d-lg-block">
+                        <a href="../login.html" class="btn btn-warning" id="login">Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-main">
+        <div class="text-center mb-4">
+            <h1 class="display-4">Product Booking</h1>
+            <p class="lead">Complete your order details below</p>
+        </div>
+
+        <div id="productInfo" class="loading">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Loading product information...</p>
+        </div>
+
+        <div class="booking-form">
+            <form id="bookingForm" novalidate>
+                <input type="hidden" id="productId" name="productId">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="name" class="form-label">
+                            <i class="fas fa-user"></i> Full Name *
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="text" 
+                                   id="name" 
+                                   name="name" 
+                                   class="form-control" 
+                                   required
+                                   minlength="2"
+                                   placeholder="Enter your full name">
+                            <button type="button" class="edit-btn" data-target="name" title="Edit Name"></button>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="phone" class="form-label">
+                            <i class="fas fa-phone"></i> Phone Number *
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="tel" 
+                                   id="phone" 
+                                   name="phone" 
+                                   class="form-control"
+                                   pattern="[0-9]{10}" 
+                                   required
+                                   placeholder="Enter 10-digit phone number">
+                            <button type="button" class="edit-btn" data-target="phone" title="Edit Phone"></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <label for="address" class="form-label">
+                            <i class="fas fa-map-marker-alt"></i> Delivery Address *
+                        </label>
+                        <!-- <button type="button" id="getLocationBtn" class="get-location-btn">
+                            <i class="fas fa-location-arrow"></i> Get Current Location
+                        </button> -->
+                        <div class="input-wrapper">
+                            <textarea id="address" 
+                                      name="address"
+                                      rows="3" 
+                                      class="form-control" 
+                                      required
+                                      minlength="10"
+                                      placeholder="Enter your complete delivery address with landmarks"></textarea>
+                            <button type="button" class="edit-btn" data-target="address" title="Edit Address"></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" 
+                            id="subscribe" 
+                            name="action" 
+                            value="true" 
+                            class="btn btn-subscribe">
+                        <i class="fas fa-calendar-check"></i> Subscribe Monthly
+                    </button>
+                    <button type="submit" 
+                            id="book" 
+                            name="action" 
+                            value="false" 
+                            class="btn btn-buy">
+                        <i class="fas fa-shopping-cart"></i> Buy Now
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="app.js"></script>
+</body>
+</html>

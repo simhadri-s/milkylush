@@ -1,0 +1,223 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,700;1,800;1,900&display=swap');
+
+/* CSS for Milkylush */
+:root
+{
+	--c1:#f4f7f0;
+  --c2:#bfd2d0;
+  --c3:#368980;
+  --c4:#62ccc0;
+  --c5:#261FB3;
+  --c6:#38b6ff;
+}
+body {
+    font-family:'Poppins','Segoe UI', 'Helvetica Neue', 'Arial', sans-serif;
+  }
+
+/*navbar*/
+.custom-navbar{
+  background-color:white;
+}
+.navbar-nav .nav-link {
+  font-size: 1.1rem; 
+  color:#123458!important;
+  font-weight:400;
+}
+
+.navbar img{
+width:180px;
+height:100px;
+border: none;
+border-radius: 20px;
+}
+
+.btn-primary {
+  border-radius: 10px;
+}
+/*navbar hover effect*/
+.navbar-nav .nav-link {
+  position: relative;
+  text-decoration: none;
+}
+
+.navbar-nav .nav-link:hover {
+  text-decoration: underline;
+}
+
+
+
+/*Hero Section*/
+.about-hero {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-video-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+/* Text content on top of video */
+.about-hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 2rem;
+}
+
+/* Optional overlay for readability */
+.about-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5); /* Adjust darkness here */
+  z-index: 1;
+}
+
+ .about-hero {
+      background-image: url('img/heroSection.jpg'); 
+      background-size: cover;
+      background-position: center;
+      height: 60vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-shadow: 2px 2px 4px #0000005b;
+    }
+
+/* Product Card*/
+.custom-card {
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 12px;
+      transition: box-shadow 0.3s;
+      height: 100%;
+    }
+
+    .custom-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .custom-card img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-top: 10px;
+      margin-bottom: 4px;
+    }
+
+    .card-price {
+      font-size: 0.95rem;
+      color: #555;
+    }
+
+    .card-offer {
+      color: green;
+      font-weight: 500;
+    }
+
+    .btn-buy {
+      background-color: #198754;
+      color: white;
+      border: none;
+      margin-top: 10px;
+    }
+
+    .btn-buy:hover {
+      background-color: #145c36;
+    }
+
+.disabled-card {
+  opacity: 0.6;
+  pointer-events: none;  /* disables click events */
+  filter: grayscale(100%);
+}
+
+/*Reason*/
+
+.milk-card {
+  background-color:var(--c6);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.milk-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+.Reason .milk-card img{
+width: 300px;
+height: 50px;
+}
+
+.Reasons{
+  color:white ;
+}
+.Reasons .six h2{
+  color: var(--c5) !important;
+}
+
+/*footer section*/
+  footer {
+   
+  }
+  footer a img {
+    transition: transform 0.3s ease;
+  }
+
+  footer a:hover img {
+    transform: scale(1.2);
+  }
+  .footer-bg {
+  background-image: url('img/footer.jpg'); 
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  color: white;
+}
+
+/* Overlay for readability */
+.footer-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(97, 88, 88, 0.6); /* Black transparent overlay */
+  z-index: 1;
+}
+
+.footer-bg .container,
+.footer-bg .text-center,
+.footer-bg .row,
+.footer-bg .col-md-4,
+.footer-bg a,
+.footer-bg p,
+.footer-bg h3,
+.footer-bg h5,
+.footer-bg small {
+  position: relative;
+  z-index: 2;
+  color:whitesmoke !important;
+  font-weight: bold;
+}
+
+.footer-bg a:hover {
+  text-decoration: underline;
+}
+ .footernav:hover{
+  color: #38b6ff !important;
+ }
