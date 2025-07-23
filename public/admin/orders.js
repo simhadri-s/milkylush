@@ -6,13 +6,11 @@ import {
   getDoc, 
   query, 
   orderBy, 
-  limit,
-  where,
-  Timestamp,
-  updateDoc // Import updateDoc for status update
+  updateDoc,
+  deleteDoc // Import deleteDoc
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-import { auth, db } from "../firebase.js"; // Assuming firebase.js exports auth and db
-import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"; // Import onAuthStateChanged and signOut
+import { auth, db } from "../firebase.js";
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
 // DOM elements
 const ordersTableBody = document.querySelector("#ordersTable tbody");
@@ -22,33 +20,27 @@ const errorElement = document.getElementById("error");
 const filterSubscriptionSelect = document.getElementById("filterSubscription");
 const filterStatusSelect = document.getElementById("filterStatus");
 const searchInput = document.getElementById("searchInput");
+const filterDateInput = document.getElementById("filterDate"); // New date filter input
 const totalOrdersElement = document.getElementById("totalOrders");
 const totalRevenueElement = document.getElementById("totalRevenue");
 
 // Data storage
 let allOrders = [];
 let filteredOrders = [];
-let isAdmin = false; // Flag to track admin status
+let isAdmin = false;
 
 // --- Admin Access Control ---
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    console.log("User is logged in:", user.uid);
-    // Check if the user is an admin
     const adminDocRef = doc(db, "admin", user.uid);
     const adminDocSnap = await getDoc(adminDocRef);
-
     if (adminDocSnap.exists()) {
-      console.log("User is an administrator.");
       isAdmin = true;
-      // Fetch and display orders only if admin
       fetchOrders();
     } else {
-      console.warn("User is not authorized to view this page.");
       showAccessDenied();
     }
   } else {
-    console.log("No user logged in.");
     showAccessDenied();
   }
 });
@@ -60,197 +52,74 @@ function showAccessDenied() {
         <h4 class="alert-heading">Access Denied!</h4>
         <p>You do not have permission to view this page. Please log in with an administrator account.</p>
         <hr>
-        <button class="btn btn-primary" id="loginRedirect">Go to Login</button>
-        <button class="btn btn-secondary" id="logoutBtn">Logout</button>
+        <button class="btn btn-primary" onclick="window.location.href='/login.html'">Go to Login</button>
       </div>
-    </div>
-  `;
-  document.getElementById('loginRedirect')?.addEventListener('click', () => {
-    // Redirect to your login page. Adjust the path as needed.
-    window.location.href = '/login.html'; 
-  });
-  document.getElementById('logoutBtn')?.addEventListener('click', async () => {
-    await signOut(auth);
-    window.location.reload(); // Reload to show access denied
-  });
+    </div>`;
 }
 
-// --- Utility functions (mostly unchanged) ---
+// --- Utility functions ---
 const formatPrice = (price) => {
-  const numPrice = parseFloat(price) || 0;
-  return numPrice.toLocaleString('en-IN', { 
-    style: 'currency', 
-    currency: 'INR',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
+  return (parseFloat(price) || 0).toLocaleString('en-IN', { 
+    style: 'currency', currency: 'INR', minimumFractionDigits: 0, maximumFractionDigits: 0 
   });
 };
 
 const formatDate = (timestamp) => {
   if (!timestamp) return "N/A";
-  
   try {
     const dateObj = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
     return dateObj.toLocaleString("en-IN", { 
-      timeZone: "Asia/Kolkata",
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
+      timeZone: "Asia/Kolkata", year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' 
     });
   } catch (error) {
-    console.error("Error formatting date:", error);
     return "Invalid Date";
   }
 };
 
-const showLoading = (show) => {
-  if (loadingElement) {
-    loadingElement.style.display = show ? 'block' : 'none';
-  }
-};
+const showLoading = (show) => { loadingElement.style.display = show ? 'block' : 'none'; };
+const showError = (message) => { errorElement.textContent = message; errorElement.style.display = 'block'; };
+const hideError = () => { errorElement.style.display = 'none'; };
 
-const showError = (message) => {
-  if (errorElement) {
-    errorElement.textContent = message;
-    errorElement.style.display = 'block';
-  }
-};
-
-const hideError = () => {
-  if (errorElement) {
-    errorElement.style.display = 'none';
-  }
-};
-
-// --- Main fetch function (mostly unchanged, fetches all necessary data) ---
+// --- Main fetch function ---
 async function fetchOrders() {
-  if (!isAdmin) {
-    console.log("Not an admin. Skipping order fetch.");
-    return;
-  }
-
+  if (!isAdmin) return;
   showLoading(true);
   hideError();
-  
   try {
-    console.log("Fetching orders from booking-info collection...");
-    
-    const bookingsQuery = query(
-      collection(db, "booking-info"),
-      orderBy("timestamp", "desc")
-    );
-    
+    const bookingsQuery = query(collection(db, "booking-info"), orderBy("timestamp", "desc"));
     const bookingsSnap = await getDocs(bookingsQuery);
-    console.log(`Found ${bookingsSnap.docs.length} bookings`);
     
-    const orders = [];
-    let totalRevenue = 0;
-
-    for (const docSnap of bookingsSnap.docs) {
+    const ordersPromises = bookingsSnap.docs.map(async (docSnap) => {
       const booking = docSnap.data();
-      const bookingId = docSnap.id;
+      let userName = "Unknown", userAddress = "N/A", phoneNo = "N/A";
 
-      try {
-        let userName = "Unknown";
-        let userAddress = "Not provided";
-        let phoneNo = "Not provided";
-
-        if (booking.userInfo) {
-          userName = booking.userInfo.name || "Unknown";
-          userAddress = booking.userInfo.address || "Not provided";
-          phoneNo = booking.userInfo.phone || "Not provided";
-        } else {
-          try {
-            const userSnap = await getDoc(doc(db, "user-info", booking.userId));
-            if (userSnap.exists()) {
-              const userData = userSnap.data();
-              userName = userData.name || "Unknown";
-              userAddress = userData.address || "Not provided";
-              phoneNo = userData.phone || "Not provided";
-            }
-          } catch (userError) {
-            console.warn(`Could not fetch user info for ${booking.userId}:`, userError);
-          }
-        }
-
-        let productName = "Unknown Product";
-        let productPrice = 0;
-
-        if (booking.productName) {
-          productName = booking.productName;
-          productPrice = booking.totalAmount || 0;
-        } else {
-          try {
-            const productSnap = await getDoc(doc(db, "products", booking.productId));
-            if (productSnap.exists()) {
-              const productData = productSnap.data();
-              productName = productData.product_name || "Unknown Product";
-              productPrice = (booking.quantity || 0) * (parseFloat(productData.price) || 0);
-            }
-          } catch (productError) {
-            console.warn(`Could not fetch product info for ${booking.productId}:`, productError);
-          }
-        }
-
-        if (!productPrice && booking.quantity) {
-          try {
-            const productSnap = await getDoc(doc(db, "products", booking.productId));
-            if (productSnap.exists()) {
-              const productData = productSnap.data();
-              productPrice = booking.quantity * (parseFloat(productData.price) || 0);
-            }
-          } catch (error) {
-            console.warn("Could not calculate price:", error);
-          }
-        }
-
-        const order = {
-          id: bookingId,
-          userId: booking.userId || "Unknown",
-          userName,
-          productName,
-          quantity: booking.quantity || 0,
-          totalAmount: productPrice,
-          userAddress,
-          phoneNo,
-          bookingDate: formatDate(booking.timestamp),
-          timestamp: booking.timestamp,
-          subscribed: booking.subscribed || false,
-          status: booking.status || "pending" // Default status
-        };
-
-        orders.push(order);
-        totalRevenue += productPrice;
-
-      } catch (orderError) {
-        console.error(`Error processing order ${bookingId}:`, orderError);
-        orders.push({
-          id: bookingId,
-          userId: booking.userId || "Unknown",
-          userName: "Error loading",
-          productName: "Error loading",
-          quantity: booking.quantity || 0,
-          totalAmount: 0,
-          userAddress: "Error loading",
-          phoneNo: "Error loading",
-          bookingDate: formatDate(booking.timestamp),
-          timestamp: booking.timestamp,
-          subscribed: booking.subscribed || false,
-          status: booking.status || "error"
-        });
+      if (booking.userInfo) {
+        userName = booking.userInfo.name || "Unknown";
+        userAddress = booking.userInfo.address || "N/A";
+        phoneNo = booking.userInfo.phone || "N/A";
       }
-    }
 
-    allOrders = orders;
-    filteredOrders = [...orders];
-    
-    console.log(`Processed ${orders.length} orders`);
-    
-    updateSummary(orders.length, totalRevenue);
-    displayOrders(filteredOrders); // Display orders after fetching
-    
+      let productName = booking.productName || "Unknown Product";
+      let productPrice = booking.totalAmount || 0;
+
+      return {
+        id: docSnap.id,
+        userId: booking.userId || "Unknown",
+        userName,
+        productName,
+        quantity: booking.quantity || 0,
+        totalAmount: productPrice,
+        userAddress,
+        phoneNo,
+        bookingDate: formatDate(booking.timestamp),
+        timestamp: booking.timestamp, // Keep original timestamp for filtering
+        subscribed: booking.subscribed || false,
+        status: booking.status || "pending"
+      };
+    });
+
+    allOrders = await Promise.all(ordersPromises);
+    applyFilters();
     showLoading(false);
 
   } catch (error) {
@@ -260,23 +129,13 @@ async function fetchOrders() {
   }
 }
 
-// --- Display orders in table (modified for status update) ---
+// --- Display orders in table ---
 function displayOrders(orders) {
-  if (!ordersTableBody) return;
-
   ordersTableBody.innerHTML = "";
-
   if (orders.length === 0) {
-    ordersTableBody.innerHTML = `
-      <tr>
-        <td colspan="9" style="text-align: center; padding: 20px; color: #666;">
-          No orders found
-        </td>
-      </tr>
-    `;
+    ordersTableBody.innerHTML = `<tr><td colspan="9" class="text-center p-3">No orders match the current filters.</td></tr>`;
     return;
   }
-
   orders.forEach(order => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
@@ -287,13 +146,9 @@ function displayOrders(orders) {
       <td>${order.userAddress}</td>
       <td>${order.phoneNo}</td>
       <td>${order.bookingDate}</td>
+      <td><span class="badge ${order.subscribed ? 'badge-success' : 'badge-primary'}">${order.subscribed ? 'Subscription' : 'One-time'}</span></td>
       <td>
-        <span class="badge ${order.subscribed ? 'badge-success' : 'badge-primary'}">
-          ${order.subscribed ? 'Subscription' : 'One-time'}
-        </span>
-      </td>
-      <td>
-        <select class="form-select status-select" data-order-id="${order.id}">
+        <select class="form-select status-select" data-order-id="${order.id}" data-original-status="${order.status}">
           <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
           <option value="confirmed" ${order.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
           <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Delivered</option>
@@ -301,67 +156,98 @@ function displayOrders(orders) {
         </select>
       </td>
     `;
-    
     ordersTableBody.appendChild(tr);
   });
-
-  // Add event listeners for status changes after all rows are added
-  document.querySelectorAll('.status-select').forEach(selectElement => {
-    selectElement.addEventListener('change', (event) => {
-      const orderId = event.target.dataset.orderId;
-      const newStatus = event.target.value;
-      updateOrderStatus(orderId, newStatus);
-    });
-  });
 }
 
-// --- New function to update order status ---
-async function updateOrderStatus(orderId, newStatus) {
-  try {
-    const orderRef = doc(db, "booking-info", orderId);
-    await updateDoc(orderRef, {
-      status: newStatus
-    });
-    console.log(`Order ${orderId} status updated to: ${newStatus}`);
-    // Optionally, refresh a specific order or all orders to reflect change
-    // For simplicity, we'll just update the local filteredOrders array
-    const orderIndex = filteredOrders.findIndex(order => order.id === orderId);
-    if (orderIndex > -1) {
-      filteredOrders[orderIndex].status = newStatus;
-      // Re-displaying filtered orders to ensure UI consistency if needed
-      // displayOrders(filteredOrders); 
+// --- Status Update and Deletion Logic ---
+async function handleStatusChange(orderId, newStatus, originalStatus, selectElement) {
+    // Confirmation Dialog
+    const isDeleting = newStatus === 'cancelled';
+    const confirmationMessage = isDeleting 
+      ? "Are you sure you want to CANCEL and DELETE this order? This action cannot be undone."
+      : `Are you sure you want to update status to '${newStatus}'?`;
+
+    if (!window.confirm(confirmationMessage)) {
+      selectElement.value = originalStatus; // Revert dropdown on cancel
+      return;
     }
-    alert(`Order ${orderId} status updated to ${newStatus}!`);
-  } catch (error) {
-    console.error("Error updating order status:", error);
-    showError(`Failed to update status for order ${orderId}.`);
-  }
+
+    // Perform Action
+    try {
+        if (isDeleting) {
+            await deleteOrderFromFirestore(orderId);
+            alert(`Order ${orderId} has been successfully deleted.`);
+        } else {
+            await updateOrderStatusInFirestore(orderId, newStatus);
+            alert(`Order ${orderId} status updated to ${newStatus}.`);
+        }
+    } catch (error) {
+        console.error(`Failed to ${isDeleting ? 'delete' : 'update'} order:`, error);
+        showError(`Error: Could not ${isDeleting ? 'delete' : 'update'} order. Please try again.`);
+        selectElement.value = originalStatus; // Revert on error
+    }
 }
 
-// --- Update summary statistics (unchanged) ---
-function updateSummary(totalOrders, totalRevenue) {
-  if (totalOrdersElement) {
-    totalOrdersElement.textContent = totalOrders;
-  }
-  
-  if (totalRevenueElement) {
-    totalRevenueElement.textContent = formatPrice(totalRevenue);
-  }
+async function updateOrderStatusInFirestore(orderId, newStatus) {
+    const orderRef = doc(db, "booking-info", orderId);
+    await updateDoc(orderRef, { status: newStatus });
+    
+    // Update local data to avoid re-fetch
+    const orderInAll = allOrders.find(o => o.id === orderId);
+    if (orderInAll) orderInAll.status = newStatus;
+    
+    applyFilters(); // Re-apply filters to show updated state
 }
 
-// --- Filter functions (unchanged) ---
+async function deleteOrderFromFirestore(orderId) {
+    const orderRef = doc(db, "booking-info", orderId);
+    await deleteDoc(orderRef);
+    
+    // Remove from local data to avoid re-fetch
+    allOrders = allOrders.filter(o => o.id !== orderId);
+
+    applyFilters(); // Re-apply filters to show updated state
+}
+
+
+// --- Update summary statistics ---
+function updateSummary(orders) {
+  const totalCount = orders.length;
+  const totalRevenue = orders.reduce((sum, order) => sum + order.totalAmount, 0);
+  totalOrdersElement.textContent = totalCount;
+  totalRevenueElement.textContent = formatPrice(totalRevenue);
+}
+
+// --- Filter Logic ---
 function applyFilters() {
   let filtered = [...allOrders];
 
+  // Subscription Filter
   if (filterSubscriptionSelect?.value) {
     const isSubscription = filterSubscriptionSelect.value === 'subscription';
     filtered = filtered.filter(order => order.subscribed === isSubscription);
   }
 
+  // Status Filter
   if (filterStatusSelect?.value) {
     filtered = filtered.filter(order => order.status === filterStatusSelect.value);
   }
 
+  // Date Filter
+  if (filterDateInput?.value) {
+      const selectedDate = new Date(filterDateInput.value);
+      const startOfDay = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), 0, 0, 0, 0);
+      const endOfDay = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), 23, 59, 59, 999);
+
+      filtered = filtered.filter(order => {
+          if (!order.timestamp || !order.timestamp.toDate) return false;
+          const orderDate = order.timestamp.toDate();
+          return orderDate >= startOfDay && orderDate <= endOfDay;
+      });
+  }
+
+  // Search Filter
   if (searchInput?.value) {
     const searchTerm = searchInput.value.toLowerCase();
     filtered = filtered.filter(order => 
@@ -374,73 +260,46 @@ function applyFilters() {
 
   filteredOrders = filtered;
   displayOrders(filteredOrders);
-  
-  const filteredRevenue = filteredOrders.reduce((sum, order) => sum + order.totalAmount, 0);
-  updateSummary(filteredOrders.length, filteredRevenue);
+  updateSummary(filteredOrders);
 }
 
-// --- Excel download function (unchanged) ---
+// --- Excel download function ---
 function downloadExcel() {
   if (filteredOrders.length === 0) {
-    alert("No orders to download");
+    alert("No orders to download for the current filters.");
     return;
   }
-
   const excelData = filteredOrders.map(order => ({
-    "Order ID": order.id,
-    "Customer Name": order.userName,
-    "Product Name": order.productName,
-    "Quantity": order.quantity,
-    "Total Amount (₹)": order.totalAmount,
-    "Phone Number": order.phoneNo,
-    "Address": order.userAddress,
-    "Order Date": order.bookingDate,
-    "Order Type": order.subscribed ? 'Subscription' : 'One-time',
-    "Status": order.status,
-    "User ID": order.userId
+    "Order ID": order.id, "Customer Name": order.userName, "Product Name": order.productName,
+    "Quantity": order.quantity, "Total Amount (₹)": order.totalAmount, "Phone Number": order.phoneNo,
+    "Address": order.userAddress, "Order Date": order.bookingDate, 
+    "Order Type": order.subscribed ? 'Subscription' : 'One-time', "Status": order.status
   }));
-
-  try {
-    const ws = XLSX.utils.json_to_sheet(excelData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Orders");
-    
-    const filename = `orders_${new Date().toISOString().split('T')[0]}.xlsx`;
-    XLSX.writeFile(wb, filename);
-    
-    console.log(`Excel file downloaded: ${filename}`);
-  } catch (error) {
-    console.error("Error creating Excel file:", error);
-    alert("Failed to create Excel file. Please try again.");
-  }
+  const ws = XLSX.utils.json_to_sheet(excelData);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Orders");
+  XLSX.writeFile(wb, `orders_${new Date().toISOString().split('T')[0]}.xlsx`);
 }
 
 // --- Event listeners ---
 document.addEventListener("DOMContentLoaded", () => {
-  // Download button
-  if (downloadBtn) {
-    downloadBtn.addEventListener("click", downloadExcel);
-  }
+  downloadBtn?.addEventListener("click", downloadExcel);
+  filterSubscriptionSelect?.addEventListener("change", applyFilters);
+  filterStatusSelect?.addEventListener("change", applyFilters);
+  searchInput?.addEventListener("input", applyFilters);
+  filterDateInput?.addEventListener("change", applyFilters); // Listener for new date filter
 
-  // Filter controls
-  if (filterSubscriptionSelect) {
-    filterSubscriptionSelect.addEventListener("change", applyFilters);
-  }
-
-  if (filterStatusSelect) {
-    filterStatusSelect.addEventListener("change", applyFilters);
-  }
-
-  if (searchInput) {
-    searchInput.addEventListener("input", applyFilters);
-  }
-
-  // Initial fetch will be triggered by onAuthStateChanged if user is admin
+  // Delegated event listener for status changes
+  ordersTableBody?.addEventListener('change', (event) => {
+    if (event.target.classList.contains('status-select')) {
+      const selectElement = event.target;
+      const orderId = selectElement.dataset.orderId;
+      const newStatus = selectElement.value;
+      const originalStatus = selectElement.dataset.originalStatus;
+      handleStatusChange(orderId, newStatus, originalStatus, selectElement);
+    }
+  });
 });
 
-// Export functions for potential external use
-window.ordersFunctions = {
-  refreshOrders: fetchOrders,
-  downloadExcel,
-  applyFilters
-};
+// Expose functions for buttons in HTML
+window.ordersFunctions = { refreshOrders: fetchOrders };
