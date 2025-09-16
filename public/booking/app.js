@@ -68,6 +68,18 @@ const handleAuthStateChange = (user) => {
   }
 };
 
+// Get product ID from URL
+const getProductId = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get('id');
+};
+
+const subscribeBtn = document.getElementById("subscribe");
+const productId = getProductId();
+  if (productId === "ghee-0.25l" || productId === "ghee-0.5l") {
+    subscribeBtn.style.display = "none";
+}
+
 // Load user data
 const loadUserData = async (uid) => {
   try {
@@ -114,12 +126,6 @@ const setupEditButtons = () => {
       }
     });
   });
-};
-
-// Get product ID from URL
-const getProductId = () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get('id');
 };
 
 // Load product data
@@ -169,6 +175,7 @@ const displayProduct = (data) => {
   if (productIdInput) {
     productIdInput.value = getProductId();
   }
+  
 };
 
 // Setup quantity controls
